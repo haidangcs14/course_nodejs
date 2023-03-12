@@ -1,0 +1,91 @@
+<div class="{{#if hiddenHeader}}main-login-page-admin{{else}}main__login{{/if}}" {{#if hiddenHeader}} style="background-image: url('/img/bg/hmc2.gif');"{{/if}}>
+    <div class="container col-sm-4 col-md-6 col-lg-4 sign-up">
+        <h2>Đăng nhập</h2>
+        <form method="POST" id="login-form">
+            <div class="form-group">
+                <label class="text-dark" for="user">Tên đăng nhập</label>
+                <input type="text" class="form-control"  id="user" name="user" placeholder="Nhập tên đăng nhập">
+                <div class="form_message"></div>
+            </div>
+            <div class="form-group">
+                <label class="text-dark" for="Password1">Nhập mật khẩu</label>
+                <div class="pass">
+                   <input type="password" class="form-control" id="Password1" name="passWord" placeholder="Nhập mật khẩu">
+                    <div class="showpass">
+                    <span class="btneye btn" style="display:none"><i class="fas fa-eye"></i></span>
+                        <span class="btneye btn"><i class="fas fa-eye-slash"></i></span> 
+                    </div> 
+                </div>
+                <div class="form_message"></div>
+            </div>
+            <div class="check__captcha">
+                <div class="input__check">
+                    <label class="text-dark" for="mact">Kết quả</label>
+                    <input type="text" class="form-control" maxlength="6" id="cpatchaTextBox" name="mact">
+                </div>
+                <div class="random__check">
+                    <div class="captcha" onclick="check()"><b id="demo"></b></div>
+                    <input type="hidden" id="c" maxlength="6" id="cpatchaTextBox" name="mact2">
+                </div>
+            </div>
+            <div class="thong-bao mt-4" ><b><p id="msg">{{msg}}</p></b></div>
+            <div class="login">
+               <button id="btn-login" class="btn btn-info btn-login-page ">Đăng nhập</button>
+               <a href="/signup" class="btn btn-info btn-login-page">Chưa có tài khoản</a>
+            </div> 
+        </form>
+        {{!-- <div class="text-center text-dark size-text-or">Hoặc</div>
+        <div class="social-btn-group">
+            <a href="/login/facebook" class="btn-login-social login-with-face fa fa-facebook">Facebook</a>
+            <a href="/login/email/link/type" class=" btn-login-social  login-with-link fa fa-google">Gmail Link</a> 
+            <a href="/auth/google" class="btn-login-social login-with-gmail fa fa-google">Gmail</a>   
+        </div>             --}}
+    </div>
+    <div class="load" id="load">
+        <div class="preload-icon">
+            <i class="fa fa-spinner fa-spin text-light" style="font-size: 60px;"></i>
+            <h4>đang đăng nhập</h4>
+        </div>
+    </div>
+<script>
+    var btnInsertCourse = document.getElementById('btn-login');
+    {{!-- var loginForm = document.forms['login-form'];
+        btnInsertCourse.onclick = function(){   
+            document.getElementById('load').style.display = "flex";
+            loginForm.action="/login";
+            loginForm.submit();
+        }   --}}
+        setInterval(function(){ 
+				document.getElementById('msg').style.display = "none";
+			}, 5000);
+        document.body.onload = function (){
+            var a = Math.floor(Math.random() * 50);
+            var c = Math.floor(Math.random() * 50);
+            var d = a+c;
+            document.getElementById("demo").innerHTML = a+"+"+c ;
+            document.getElementById("c").value = d;
+        } 
+
+        function check(){
+            var a = Math.floor(Math.random() * 50);
+            var c = Math.floor(Math.random() * 50);
+            var d = a+c;
+            document.getElementById("demo").innerHTML = a+"+"+c ;
+            document.getElementById("c").value = d;
+        } 
+
+    var passText = document.getElementById('Password1');
+    var btnEye = document.getElementsByClassName('btneye');
+    btnEye[1].onclick = function(){
+        btnEye[0].style.display = "";
+        btnEye[1].style.display = "none";
+        passText.type = "text";
+    }
+    btnEye[0].onclick = function(){
+        btnEye[1].style.display = "";
+        btnEye[0].style.display = "none";
+        passText.type = "password";
+    }
+</script>
+</div>
+

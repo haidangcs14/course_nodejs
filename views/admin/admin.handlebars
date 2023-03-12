@@ -1,0 +1,41 @@
+<div class="main-layout">
+    <div id="toast"></div>
+    <div id="dialog"></div>
+    <div class="admin-panel"></div>
+</div>
+</div>
+<div id="delete-course" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="p-4 border-bottom text-center">
+        <h5>Bạn muốn xóa khóa học này không?</h5>
+      </div>
+      <div class="p-4">
+        <button type="button" id="btn-delete-course" class="btn btn-danger">Xóa bỏ</button>
+        <button type="button" class="btn btn-secondary" style="float: right;" data-dismiss="modal">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+<form name="delete-course-form" method="POST"></form>
+</script>
+<script src="/js/toast.js"></script>
+<script src="/js/productPanel.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+
+        var Courseid;
+        var deleteForm = document.forms['delete-course-form'];
+        var btnDeleteCourse = document.getElementById('btn-delete-course');
+
+        $('#delete-course').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            Courseid = button.data('id');
+    });
+  
+        btnDeleteCourse.onclick = function(){
+            deleteForm.action = '/admin/'+Courseid+'/delete';
+            deleteForm.submit();
+    }  
+});
+</script>

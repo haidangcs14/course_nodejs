@@ -1,0 +1,179 @@
+.btn-show-more {
+     background-color: #da471f;
+     color: #fff;
+     font-size: 1.1rem;
+     padding: 10px 15px;
+     border-radius: 3rem;
+}
+
+.btn-show-more:hover {
+    opacity: .8;
+    text-decoration: none;
+    color: #fff;
+}
+
+.main__show_courses {
+    background-color: #ffffff;
+    width: 100%;
+    padding: 20px 15px;
+    min-height: 500px;
+}
+
+.main__show_courses > .title {
+    color: #000;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.__show__courses {
+    display: flex;
+    flex-wrap: wrap;
+    width: 85%;
+    margin: auto;
+}
+
+.__course {
+    width: 33%;
+    margin-left: 2.5%;
+    box-shadow: 0 0 2px #000;
+    border-radius: .1rem;
+    overflow: hidden;
+    width: 30%;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.img__course {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    padding: 29%;
+}
+
+.img__course > img {
+    position: absolute;
+    width: 100%;
+    transition: .3s;
+}   
+
+.img__course:hover > img {
+    filter: opacity(.85);
+    width: 110%;
+}
+
+.img__course .price {
+    width: 100%;
+    background-color: rgb(73, 73, 73, .6);
+    position: absolute;
+    text-align: center;
+    font-weight: 600;
+    padding: 10px 0;
+    left: 0;
+    bottom: 0;
+    color: rgb(255, 255, 255);
+}
+
+.ribbon-course {
+    padding: 10px 40px;
+    font-weight: 600;
+    color: #fff;
+    position: absolute;
+    transform: rotate(-45deg);
+    z-index: 1;
+}
+
+.ribbon-course.free {
+    top: 10px;
+    left: -45px;
+    background: linear-gradient(to right, rgb(0, 68, 255), rgb(0, 225, 255));
+}
+
+.ribbon-course.charge {
+    top: 10px;
+    left: -40px;
+    background: linear-gradient(to right, rgb(255, 102, 0), rgb(255, 217, 0));
+}
+
+.info__course {
+    border-top: 2px solid #eeeeee;
+    width: 100%;
+    background-color: #ffffff;
+    border-bottom-left-radius: .4rem;
+    border-bottom-right-radius: .4rem;
+    padding: 10px;
+}
+
+.name__course {
+    width: 100%;
+}
+
+.content__course {
+    width: 100%;
+    min-height: 150px;
+    word-break: keep-all;
+}
+
+.go_to__course {
+    display: flex;
+    padding: 5px;
+    position: relative;
+}
+
+.btn__go_course {
+    margin: auto;  
+}
+
+.btn-learn {
+    border-radius: 1rem;
+    background-color: rgb(133, 2, 255);
+    text-decoration: none;
+    color: #ffffff;
+    width: 100%;
+    height: 100%;
+    padding: 5px 10px;
+}
+
+.btn-buy {
+    display: inline;
+    border-radius: 1rem;
+    background-color: rgb(255, 176, 5);
+    text-decoration: none;
+    color: #ffffff;
+    width: 100%;
+    height: 100%;
+    padding: 5px 10px;
+}
+
+.btn-learn:hover, .btn-buy:hover {
+    cursor: pointer;
+    text-decoration: none;
+    color: #fff;
+    opacity: .8;
+}
+
+.btn-learning{
+    text-decoration: none;
+    color: #ffffff;
+    width: 100%;
+    height: 100%;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 1rem;
+    background-color: #da471f;
+}
+
+.btn-learning:hover{
+    text-decoration: none;
+    background-color: #be3f1c;
+    color: #fff;
+}
+
+.num__member {
+    right: 0;
+    position: absolute;
+}

@@ -1,0 +1,43 @@
+<div style="height: auto;margin-left:100px;; margin-top:100px;">
+  <form action="/courses/thiet-ke-web"  method="post" id="answerform">
+    {{#each quizz}}
+    <h3> Cau {{countindex @index}} : {{this.content}}</h3>
+    {{#each (reverse this.answer)}}
+    <div>
+      <input type="radio" name="question-{{@../index}}" value="{{this}}">
+      <label>{{this}}</label>
+    </div>
+    {{/each}}
+    {{/each}}
+    <br>
+    <button type="submit" id="submitBtn">Submit</button>
+  </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  const form = document.getElementById('answerform');
+  form.addEventListener('submit', function(event) {
+    // ngăn chặn việc submit form mặc định
+    event.preventDefault();
+    // thực hiện hành động mong muốn, ví dụ hiển thị modal
+    displayModal();
+  });
+  function displayModal() {
+    $.ajax({
+      type: "POST",
+      url: `/courses/${this.slug}/baitap`,
+      data: $("#answerform").serialize(),
+      success: function(response) {
+        var confirmation = confirm("Số điểm của bạn là: "+response.score);
+      if (confirmation) {
+        history.back();
+      }
+      },
+      error: function(xhr, status, error) {
+        console.log(error);
+      }
+    });
+  }
+</script>
+

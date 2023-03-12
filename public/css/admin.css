@@ -1,0 +1,362 @@
+.admin___size {
+    width: 90%;
+    margin:auto;
+    padding: 10px;
+    margin-top: 80px;
+}
+
+.admin__table {
+    display: inline-block;
+    width: 100%;
+    min-height: 400px;
+    max-height: 500px;
+    overflow-y: scroll;
+    padding-bottom: 20px;
+}
+
+.admin__course {
+    display: inline-block;
+    padding: 10px;
+    width: 23%;
+    margin-left: 1%;
+    margin-top: 10px;
+    border: 2px solid #747373;
+}
+
+.admin__name_course {
+    margin-bottom: 5px;
+}
+
+.admin__action_course {
+    padding: 5px;
+}
+
+.btn__admin_action {
+    width: 30%;
+    text-align: center;
+    border-radius: .4rem;
+    display: inline-block;
+}
+
+.btn__admin_action + .btn__admin_action {
+    margin-left: 2.2%;
+}
+
+.btn__admin_action > a {
+    color: #ffffff;
+    display: inline-block;
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.main__admin_action {
+    padding-top: 80px;
+}
+
+/* addVIdeo */
+
+.main-add-video {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 60px;
+}
+
+.view-add-video {
+    min-height: 90%;
+    width: 90%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.screen-video {
+    width: 45%;
+}
+
+.screen-video-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: red;
+}
+
+.screen-video-time {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: rgb(0, 174, 255);
+}
+
+
+.screen-video__iframe {
+    position: relative;
+    padding-bottom: 56%;
+    height: 0;
+    width: 100%;
+}
+
+.iframe-add-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.control-add {
+    flex: 0.95;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+}
+
+.list-idvideo {
+    width: 100%;
+    height: 300px;
+    overflow-y: scroll;
+    box-shadow: 0 0 5px #000;
+    padding: 20px;
+}
+
+/* payments */
+.main-admin-pay {
+    width: 100%;
+    padding-top: 70px;
+    padding-bottom: 40px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.panel-payments {
+    position: relative;
+    width: 90%;
+    padding: 30px;
+    padding-bottom: 70px;
+    min-height: 88vh;
+    background-color: #fff;
+}
+
+.panel-payments__statistics {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.panel-payments__info {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-info {
+    margin-top: 1rem;
+    background-color: #fff;
+    box-shadow: 0 0 4px #000;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-info__text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80%;
+}
+
+.card-info__text .text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.title-details {
+    position: relative;
+}
+
+.title-details-text {
+    content: "Chi tiết";
+    position: absolute;
+    background-color: rgb(97, 65, 30);
+    padding: 5px;
+    top: -80%;
+    right: -120%;
+    opacity: 0;
+}
+
+.title-details:hover > .title-details-text {
+    opacity: 1;
+}
+
+.panel-payments__pagination {
+    bottom: 5px;
+    position: absolute;
+    display: flex;
+}
+
+.panel-payments__pagination .tab{
+    margin-left: 5px;
+    padding: 8px 15px;
+    border: 1px solid #000;
+}
+
+.panel-payments__pagination .tab:hover {
+    cursor: pointer;
+}
+
+.panel-payments__pagination .tab:active {
+    opacity: .7;
+    background-color: #ccc;
+}
+
+.panel-payments__pagination .tab.active{
+    margin-left: 5px;
+    padding: 8px 15px;
+    color: #fff;
+    background-color: rgb(255, 75, 4);
+    border: 1px solid rgb(255, 75, 4);
+}
+
+.panel-payments__pagination .tab.active:active {
+    background-color: rgb(255, 75, 4);
+    opacity: 1;
+}
+
+.panel-payments__pagination .tab.active:hover {
+    cursor: default;
+}
+
+.main-admin-pay__wait {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100000000000;
+    display: none;
+}
+
+.main-admin-pay__wait .wait {
+    animation: rotating .23s linear infinite;
+}
+
+.main-admin-pay__wait .wait > img {
+    width: 100px;
+}
+
+@keyframes rotating {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(-360deg);
+    }
+}
+
+.main-admin-pay__details {
+    position: fixed;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.712);
+    z-index: 100000000000;
+}
+
+.details-user .close {
+    position: absolute;
+    font-size: 2.5rem;
+    top: 10px;
+    right: 10px;
+}
+
+.details-user {
+    position: relative;
+    height: 70vh;
+    width: 40%;
+    background-color: #fff;
+    padding: 30px;
+}
+
+.details-user__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.modal-dialog {
+    margin-top: 10%;
+}
+
+/* thành viên */
+.form-position {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.438);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100000000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-position form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    width: 40%;
+    height: 30%;
+    background-color: #fff;
+}
+
+.form-position form label {
+    cursor: pointer;
+    margin-left: 20px;
+    margin-right: 5px;
+}
+
+.form-position form .title {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.select-position-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-position-select {
+    position: relative;
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: 1px solid #ccc;
+}
+
+.check-position:checked ~ .btn-position-select {
+    font-size: 1.3rem;
+    font-weight: 600;
+    border: 1px solid brown;
+}
+
+.check-position:checked ~ .btn-position-select::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border-bottom: 20px solid brown;
+    border-left: 20px solid transparent;
+}

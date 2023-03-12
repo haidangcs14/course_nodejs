@@ -1,0 +1,25 @@
+<div class="footer">
+  <div class="footer-ribbon text-right p-3">
+      <b class="text-light">Số người Online: <span id="number-online"></span></b>
+  </div>
+  <div class="footer-info">
+      <div class="footer-info-contact">
+          <div class="footer-info-contact__email">
+              Email liên hệ: <a href="">hmcong@vncert.vn</a>
+          </div>
+          <div class="footer-info-contact__author">
+              Design by HoangCong
+          </div>
+          <small class="text-secondary">Start 2022</small>
+      </div>
+  </div>
+</div>
+<script type="text/javascript">
+    socket.on('get-number-online', (online)=> {
+        if (online) {
+            document.getElementById('number-online').innerHTML = online;
+        }else {
+            document.getElementById('number-online').innerHTML = 1;
+        }
+    });
+</script>

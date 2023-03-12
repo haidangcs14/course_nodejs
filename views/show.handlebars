@@ -1,0 +1,651 @@
+<div class="view_show_main">
+    <div class="tab_view">
+        <div class="screen_video">
+            <div class="name_video"></div>
+            <div class="video_src">
+                <div class="iframe_video" id="player" src=""></div>
+                <p>ok</p>
+            </div>
+        </div>
+        <div class="video_list-fake"></div>
+        <div class="video_list">
+            <div class="title_list">Danh sách bài học</div>
+            <div class="list_lessons"></div>
+        </div>
+    </div>
+   
+    <button onclick="location.href='/courses/{{course.slug}}/baitap'" name="baitap">Bai Tap</button>
+    <button onclick="location.href='/courses/{{course.slug}}/score'" name="xemdiem">Xem Diem</button>      
+    
+    <div class="comment">
+        <div class="course-comment">
+            <b>Phần bình luận  <span class="ml-3" id="num-count-q">0 câu hỏi</span></b> 
+            <div class="input-comment">
+                <div class="img">
+                    <img src="/img/userchat.png" alt="">
+                </div>
+                <div class="input-content">
+                    <input id="input-cmt" type="text" placeholder="Bạn có thắc mắc gì trong bài học này?">
+                </div>
+                <div class="btn-send-cmt">
+                    <i class="far fa-paper-plane"></i>
+                </div>
+            </div>
+            <div class="context-comment">
+                <div class="load-comment">
+                    Đang tải dữ liệu <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                </div>
+            </div>
+        </div>
+        <div class="img-bg">
+            <img src="/img/bg/q-a.jpg" alt="">
+        </div>
+    </div>
+    <div id="edit-cmt"></div>
+</div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+ 
+    const S = document.querySelector.bind(document);
+    const SA = document.querySelectorAll.bind(document);
+
+    const listLessons = S('.list_lessons');
+    const ScreenYT = S('.video_src');
+    const iframeVideo = S('.iframe_video');
+    const lessonBtn = S('.video_list');
+    const nameLesson = S('.name_video');    
+    const STORAGE_INDEX_VIDEO = 'video';
+
+    let IDvideo;
+    let timeVideo = 0;
+
+    const videoIframe = {
+        indexFirst: Number({{lesson.progress}}),
+        Progress: Number({{lesson.progress}}),
+        videos: [
+            {{#each course.idVideo}}
+                
+                { 
+                    src: '{{this}}', 
+                    namevideo: '{{lookup ../course.nameLesson @index}}',
+                    timevideo: '{{lookup ../course.timeVideo @index}}',
+                }
+                ,
+            {{/each}}
+        ],
+        config: JSON.parse(localStorage.getItem(STORAGE_INDEX_VIDEO)) || {},
+        setConfig: function (index, value) {
+            this.config[index] = value;
+            localStorage.setItem(STORAGE_INDEX_VIDEO, JSON.stringify(this.config));
+        },
+        idvideo: function () {
+            IDvideo = this.videos[this.indexFirst].src;
+        },
+        timevideo: function() {
+            const setTimeOk = Number(this.videos[this.indexFirst].timevideo)/100*80;
+            return setTimeOk;
+        },
+        events: function () {
+            const _this = this;
+
+            socket.emit('get-index-lesson', _this.indexFirst);
+
+            lessonBtn.onclick = function (e) {
+                const lesson = e.target.closest('.lesson_item:not(.active)')
+
+                if (lesson && e.target.closest('.lesson_item') ) {
+                    if (lesson) {
+                        _this.indexFirst = Number(lesson.dataset.index);
+                        _this.setConfig('indexVideo', _this.indexFirst);
+                        _this.setConfig('resetIndexVideo', true);
+                        document.querySelector('.context-comment').innerHTML = 
+                        `<div class="load-comment">
+                            Đang tải dữ liệu <i class="fa fa-spinner fa-pulse fa-fw"></i>
+                        </div>`;
+                        player.loadVideoById(_this.videos[_this.indexFirst].src);
+                        socket.emit('reset-count-time');
+                        socket.emit('get-index-lesson', _this.indexFirst);
+                        socket.emit('call-get-cmt');
+                        _this.idvideo();
+                        _this.render();
+                        _this.namevideo();
+                    } 
+                }     
+            }
+
+            socket.on('reset-view', (index)=>{
+                _this.Progress = index;
+                _this.render();
+                const lessonPlaying = S('.list_lessons .active');
+                lessonPlaying.classList.add('play');
+            })
+        },
+        namevideo: function () {
+            nameLesson.innerHTML = 'Bài ' + this.videos[this.indexFirst].namevideo
+        },
+        render: function () {
+            const htmlList = this.videos.map((lesson, index)=> { 
+            {{#if admin}}
+                return `<div class="lesson_item ${index === this.indexFirst ? 'active' : ''}" data-index="${index}">
+                        <span class="playing"><i class="far fa-play-circle"></i></span>
+                        <span class="pause"><i class="far fa-pause-circle"></i></span>
+                        <div class="name_leson">Bài ${lesson.namevideo}</div> 
+                        
+                    </div>
+                  `
+            {{else}}
+            if (index <= this.Progress) {
+                return `<div class="lesson_item ${index === this.indexFirst ? 'active' : ''}" data-index="${index}">
+                        <span class="playing"><i class="far fa-play-circle"></i></span>
+                        <span class="pause"><i class="far fa-pause-circle"></i></span>
+                        <div class="name_leson">Bài ${lesson.namevideo}</div> 
+                       
+                    </div>
+                     `
+            }
+            else {
+                return `<div class="lesson_item lock">
+                        <span class="locked"><i class="fas fa-lock"></i></span>
+                        <div class="name_leson">Bài ${lesson.namevideo}</div> 
+                       
+                    </div>
+                     `
+                }
+            {{/if}}
+            });
+            listLessons.innerHTML = htmlList.join('');
+        },
+        start: function () {
+            if (this.config.resetIndexVideo) this.indexFirst = this.config.indexVideo;
+            if ( this.indexFirst >= this.videos.length) this.indexFirst = 0;
+            this.events();
+            this.idvideo();
+            this.render();
+            this.namevideo();
+        }            
+    }
+    videoIframe.start();
+    var player, playing = false;
+    function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+        videoId: `${IDvideo}`,
+        events: {
+            'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+    var myTime;
+
+    function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING) {
+            const lessonPlaying = S('.list_lessons .active');
+            lessonPlaying.classList.add('play');
+            if(videoIframe.indexFirst === videoIframe.Progress) {
+                socket.emit('start-count-time');
+            }
+            playing = true;
+        }
+        else if(event.data == YT.PlayerState.PAUSED){
+            const lessonPlaying = S('.list_lessons .active');
+            lessonPlaying.classList.remove('play');
+            clearInterval(myTime);
+            myTime = null;
+            playing = false;
+        }
+    }
+    socket.on('Reset-time', ()=> {
+        timeVideo=0;
+        myTime = null;
+    })
+
+    socket.on('Resume-count-time', ()=>{
+        if (videoIframe.Progress==videoIframe.indexFirst && videoIframe.Progress < videoIframe.videos.length ) {
+            myTime = setInterval(()=>{
+                timeVideo++;
+                if (timeVideo >= videoIframe.timevideo()) {
+                    socket.emit('Lesson-finished', [`{{lesson._id}}`, videoIframe.Progress, videoIframe.videos.length])
+                }
+            }, 1000);
+        }
+    });
+
+    socket.on('Stop-count-time',()=>{
+        clearInterval(myTime);
+        myTime = null;
+    });
+</script>
+<script>
+(function(){
+    function oldTime(time) {
+        let timeCmt = new Date(time);
+        let min = timeCmt.getMinutes();
+        let hours = timeCmt.getHours();
+        let today = timeCmt.getDay()+1;
+        let day = timeCmt.getDate();
+        let month = timeCmt.getMonth()+1;
+        let year = timeCmt.getFullYear();
+        if (today==1) today = 'CN';
+        return `${today=='CN'?'':'Thứ'} ${today}, ${day} tháng ${month} ${year} lúc ${hours}:${min}`;
+    }
+
+    function timeHistory(timesta) {
+        const time = Number(timesta);
+        const datenow = new Date();
+        let age = Math.abs(datenow - time);
+        let unti ='';
+        let out = '';
+
+        if (age < 60000) {
+            return out = "Vừa xong";
+        }
+        else {
+            if (age >=60000 && age <3600000) {
+            age = Math.round(age/1000/60);
+            unti = 'phút';
+            }
+            else if (age >= 3600000 && age <= 86400000) {
+                age = Math.round(age/1000/60/60);
+                unti = 'giờ';
+            }
+            else{
+                age = Math.round(age/1000/60/60/24);
+                unti = 'ngày';
+            }
+            return out = age +" "+ unti + " trước";
+        }
+    }
+
+    function btnDelReply(idUser, id, index) {
+        if (idUser == '{{idUser}}') {
+            return `
+                <div class="reply-comment underline-text del-cmt-reply" data-id="${id}" data-iduser="${idUser}" data-index="${index}">Xóa</div>
+                <i class="fas fa-circle m-2" style="font-size: .25rem;"></i>
+            `
+        }else {
+            return '';
+        }
+    }
+
+    function formEditCmt({
+        data = {
+            nameUser: '',
+            comment: '',
+        },
+        action = function(){
+
+        }
+    }){
+        const main = document.querySelector('#edit-cmt');
+        if (main) {
+            const edit = document.createElement('div');
+            edit.classList.add('edit-cmt');
+            edit.innerHTML = `
+            <div class="form-edit">
+                <div class="form-edit__name">
+                <span class="text-danger">${data.nameUser}</span> - Chỉnh sửa bình luận
+                </div>
+                <div class="form-edit__input">
+                    <input class="input-edit" type="text" value="${data.comment}">
+                </div>
+                <div class="form-edit__actions">
+                    <div class="btn btn-primary">
+                        Cập nhật
+                    </div>
+                    <div class="btn btn-secondary">
+                        Hủy
+                    </div>
+                </div>
+            </div>
+            `
+            main.appendChild(edit);
+
+            edit.onclick =(e)=> {
+                if(e.target.closest('.btn-secondary')) {
+                    main.removeChild(edit)
+                }else if(e.target.closest('.btn-primary')) {
+                    const input = document.querySelector('.input-edit');
+                    action(input.value);
+                    main.removeChild(edit);
+                }
+            }
+        }
+    }
+
+    const countComments = document.querySelector('#num-count-q');
+    const mainComment = document.querySelector('.context-comment');
+    const inputCmt = document.querySelector('#input-cmt');
+    const submitCmt = document.querySelector('.btn-send-cmt');
+    let dataComment = [];
+    const idCourseCmt = '{{course._id}}';
+
+    const renderComment = {
+        indexCurr: 1,
+        lesson: 0,
+        sortComment: function (){
+            dataComment.sort((a, b)=> {
+                return b.date - a.date
+            })
+        },
+        config: JSON.parse(localStorage.getItem(STORAGE_INDEX_VIDEO)) || {},
+        setConfig: function (index, value) {
+            this.config[index] = value;
+            localStorage.setItem(STORAGE_INDEX_VIDEO, JSON.stringify(this.config));
+        },
+        handle: {
+            _this: this,
+            renderReply(data, idCmt, id) {
+                const html = data.map((value, index)=>{
+                    return `
+                        <div class="main-comment">
+                            <div class="user">
+                                <div class="img">
+                                    <img src="/img/userchat.png" alt="">
+                                </div>
+                            </div>
+                            <div class="content-comment">
+                                <div class="content-comment-text">
+                                    <div class="name-user">
+                                        ${value.nameUser}
+                                    </div>
+                                    <div class="text-cmt">
+                                        ${value.contentComment}
+                                    </div>
+                                </div>
+                                <div class="option-comment ">
+                                    <label for="checked-checked-reply-input-r-${index}${idCmt}" class="reply-comment underline-text">Trả lời</label>
+                                    <i class="fas fa-circle m-2" style="font-size: .25rem;"></i>
+                                    ${btnDelReply(value.idUser, id, value._idCmt)}
+                                    <div class="time-comment underline-text">
+                                        ${timeHistory(value.date)}
+                                        <div class="title">${oldTime(value.date)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-reply-cmt">
+                            <input type="checkbox" hidden class="checked-reply-input" id="checked-checked-reply-input-r-${index}${idCmt}">
+                            <div class="input-comment reply">
+                                <div class="img reply">
+                                    <img src="/img/userchat.png" alt="">
+                                </div>
+                                <div class="input-content reply">
+                                    <input type="text" id="input-r-${index}${idCmt}" placeholder="Trả lời ..." value="@${value.nameUser}&nbsp;">
+                                </div>
+                                <label class="btn-destroy-reply-cmt" for="checked-checked-reply-input-r-${index}${idCmt}">Hủy</label>
+                                <div class="btn-reply-cmt btn-reply-reply" data-input="input-r-${index}${idCmt}" data-id="${id}">
+                                    Trả lời
+                                </div>
+                            </div>
+                        </div>
+                    `
+                });
+                return html.join('');
+            },
+            showBtnDel(idUser, id, comment) {
+                if (idUser == '{{idUser}}') {
+                    return `
+                        <div class="reply-comment underline-text del-cmt" data-id="${id}">Xóa</div>
+                        <i class="fas fa-circle m-2" style="font-size: .25rem;"></i>
+                        <div class="reply-comment underline-text edit-cmt-btn" data-id="${id}" data-content="${comment}">Sửa</div>
+                        <i class="fas fa-circle m-2" style="font-size: .25rem;"></i>
+                    `
+                }else {
+                    return '';
+                }
+            }
+        },
+        event: function() {
+            const _this = this;
+
+            socket.on('index-lesson', (index)=>{
+                _this.lesson = index;
+            })
+            socket.on('get-data-cmt', (data)=> {
+                dataComment = [];
+                data.map(value=>{
+                    if (value.idCourse == '{{course._id}}' && value.lesson == _this.lesson) {
+                        dataComment.push(value);
+                    }
+                })
+                this.sortComment();
+                this.view();
+            })
+
+            submitCmt.onclick =()=> {
+                const data = inputCmt.value;
+                inputCmt.value = '';
+                socket.emit('add-cmt-to-array', [data, '{{course._id}}', '{{idUser}}', _this.lesson]);
+            }
+            
+            inputCmt.onfocus =()=> {
+                window.onkeyup =(e)=>{
+                    if (e.keyCode == 13) {
+                        const data = inputCmt.value;
+                        inputCmt.value = '';
+                        socket.emit('add-cmt-to-array', [data, '{{course._id}}', '{{idUser}}', _this.lesson]);
+                    }
+                }
+            }
+        },
+        view: function() {
+            {{!-- Comments --}}
+            const number = `${dataComment.length} câu hỏi`;
+            countComments.innerHTML = number;
+
+            const htmlCmt = dataComment.map((data, index)=> {
+                if (index < 4*this.indexCurr) {
+                    if (data.reply.length > 0) {
+                        return `
+                            <div class="main-comment">
+                                <div class="user">
+                                    <div class="img">
+                                        <img src="/img/userchat.png" alt="">
+                                    </div>
+                                </div>
+                                <div class="content-comment">
+                                    <div class="content-comment-text">
+                                        <div class="name-user">
+                                            ${data.nameUser}
+                                        </div>
+                                        <div class="text-cmt">
+                                            ${data.contentComment}
+                                        </div>
+                                    </div>
+                                    <div class="option-comment ">
+                                        <label for="checked-checked-reply-input${index}" class="reply-comment underline-text">
+                                           Trả lời
+                                        </label>
+                                        <i class="fas fa-circle m-2" style="font-size: .25rem;"></i>
+                                        ${this.handle.showBtnDel(data.idUser, data._id, data.contentComment)}
+                                        <div class="time-comment underline-text">
+                                            ${timeHistory(data.date)}
+                                            <div class="title">${oldTime(data.date)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="reply-context">
+                                        <input type="checkbox" hidden ${data._id==this.config.reply?'checked':''} class="checked-hidden" id="checked-hidden${index}">
+                                        <div class="reply-content">
+                                            ${this.handle.renderReply(data.reply, index, data._id)}
+                                        </div>
+                                        <label for="checked-hidden${index}" data-id="${data._id}" class="reply-btn-cmt btn-show-reply ">
+                                        Xem ${data.reply.length} câu trả lời <i class="fas fa-caret-down"></i>
+                                        </label>
+                                        <label for="checked-hidden${index}" class="reply-btn-cmt btn-hidden-reply">
+                                        Ẩn câu trả lời <i class="fas fa-caret-up"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-reply-cmt">
+                                <input type="checkbox" hidden class="checked-reply-input" id="checked-checked-reply-input${index}">
+                                <div class="input-comment reply">
+                                    <div class="img reply">
+                                        <img src="/img/userchat.png" alt="">
+                                    </div>
+                                    <div class="input-content reply">
+                                        <input class="reply-${index}" type="text" placeholder="Trả lời ..." value="@${data.nameUser}&nbsp;">
+                                    </div>
+                                    <label class="btn-destroy-reply-cmt" for="checked-checked-reply-input${index}">Hủy</label>
+                                    <div class="btn-reply-cmt" data-index="${index}" data-id="${data._id}">
+                                        Trả lời
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                } else {
+                    return `
+                            <div class="main-comment">
+                                <div class="user">
+                                    <div class="img">
+                                        <img src="/img/userchat.png" alt="">
+                                    </div>
+                                </div>
+                                <div class="content-comment">
+                                    <div class="content-comment-text">
+                                        <div class="name-user">
+                                            ${data.nameUser}
+                                        </div>
+                                        <div class="text-cmt">
+                                            ${data.contentComment}
+                                        </div>
+                                    </div>
+                                    <div class="option-comment ">
+                                        <label for="checked-checked-reply-input${index}" class="reply-comment underline-text">
+                                           Trả lời
+                                        </label>
+                                        <i class="fas fa-circle m-2" style="font-size: .25rem;"></i>
+                                        ${this.handle.showBtnDel(data.idUser, data._id, data.contentComment)}
+                                        <div class="time-comment underline-text">
+                                             ${timeHistory(data.date)}
+                                            <div class="title">${oldTime(data.date)}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-reply-cmt">
+                                <input type="checkbox" hidden class="checked-reply-input" id="checked-checked-reply-input${index}">
+                                <div class="input-comment reply">
+                                    <div class="img reply">
+                                        <img src="/img/userchat.png" alt="">
+                                    </div>
+                                    <div class="input-content reply">
+                                        <input class="reply-${index}" type="text" placeholder="Trả lời ..." value="@${data.nameUser}&nbsp;">
+                                    </div>
+                                    <label class="btn-destroy-reply-cmt" for="checked-checked-reply-input${index}">Hủy</label>
+                                    <div class="btn-reply-cmt" data-index="${index}" data-id="${data._id}">
+                                        Trả lời
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                    }
+                } else if (index == 4*this.indexCurr) {
+                    return `
+                        <div class="btn-more-cmt">
+                            <b>Xem thêm bình luận</b> 
+                        </div>
+                    `
+                }
+            });
+            if (dataComment.length <= 0) {
+                const htmlCmt = `<div class="text-center text-secondary"> <b>Hiện tại chưa có bình luận nào</b></div>`;
+                mainComment.innerHTML = htmlCmt;
+            }
+            else {
+                mainComment.innerHTML = htmlCmt.join('');
+            }
+            {{!--  --}}
+
+            this.handleClick();
+        },
+        handleClick: function() {
+            const _this = this;
+            const showMore = document.querySelector('.btn-more-cmt');
+            if (showMore) {
+                showMore.onclick =()=> {
+                    this.indexCurr+=1;
+                    this.view();
+                }
+            }
+
+            const btnDel = document.querySelectorAll('.del-cmt');
+            if (btnDel.length > 0) {
+                btnDel.forEach(e=>{
+                    e.onclick =()=>{
+                        socket.emit('del-comment', [e.dataset.id, '{{idUser}}']);
+                    }
+                });
+            }
+
+            const submitReply = document.querySelectorAll('.btn-reply-cmt');
+            submitReply.forEach(e=>{
+                e.onclick =()=>{
+                    const idUser = '{{idUser}}';
+                    const elementInput = document.querySelector(`.reply-${e.dataset.index}`);
+                    const idCmt = e.dataset.id;
+                    _this.setConfig('reply', idCmt);
+                    socket.emit('add-reply', [elementInput.value, idCmt, idUser]);
+                    elementInput.value = '';
+                }
+            });
+
+            const btnDelReplyCmt = document.querySelectorAll('.del-cmt-reply');
+            btnDelReplyCmt.forEach(e=>{
+                e.onclick =()=> {
+                    socket.emit('del-comment-reply', {'id': e.dataset.id, 'idUser': e.dataset.iduser, 'index': e.dataset.index});
+                }
+            });
+
+            const showReply = document.querySelectorAll('.btn-show-reply');
+            showReply.forEach(e=>{
+                e.onclick =()=> {
+                    _this.setConfig('reply',e.dataset.id);
+                    _this.view();
+                }
+            });
+
+            const hideReply = document.querySelectorAll('.btn-hidden-reply');
+            hideReply.forEach(e=>{
+                e.onclick =()=> {
+                    _this.setConfig('reply',null);
+                    _this.view();
+                }
+            });
+
+            const submitReplyof = document.querySelectorAll('.btn-reply-reply');
+            submitReplyof.forEach(e=>{
+                e.onclick =()=>{
+                    const idUser = '{{idUser}}';
+                    const elementInput = document.querySelector(`#${e.dataset.input}`);
+                    const idCmt = e.dataset.id;
+                    socket.emit('add-reply', [elementInput.value, idCmt, idUser]);
+                    elementInput.value = '';
+                }
+            });
+
+            const btnEdit = document.querySelectorAll('.edit-cmt-btn');
+            btnEdit.forEach(e=>{
+                e.onclick =()=>{
+                    console.log(e.dataset.content)
+                   formEditCmt({
+                       data: {
+                           nameUser: '{{name}}',
+                           comment: `${e.dataset.content}`
+                       },
+                       action: function(data) {
+                            socket.emit('edit-cmt', {'id': e.dataset.id, 'cmt': data});
+                       }
+                   })
+                }
+            });
+        }
+        ,
+        start: function() {
+            socket.emit('call-get-cmt', '{{idCourse}}')
+            this.event();
+            this.sortComment();
+        }
+    }
+    renderComment.start();
+})();
+</script>
